@@ -36,12 +36,10 @@ class TicTacToe
   end
 
   def valid_move?(position)
-    if @board[position] == nil
-      return false
-    elsif position_taken?(position) == true
-      return false
-    else
+    if position.between?(0,8) && position_taken?(position) == false
       return true
+    else
+      return false
     end
   end
 
@@ -64,11 +62,71 @@ class TicTacToe
     puts "Please choose a position on the board from 1 to 9: "
     user_input = input_to_index(gets.chomp)
     if valid_move?(user_input)
-      binding.pry
       move(user_input, current_player)
       display_board
     else
       turn
     end
   end
+
+  def won?
+    WIN_COMBINATIONS.any? { |winning_combo|
+      @board_combo = [@board[winning_combo[0]], @board[winning_combo[1]], @board[winning_combo[2]]]
+      if  @board_combo == ["X","X","X"] || @board_combo == ["O","O","O"]
+        return winning_combo
+      else
+        false
+      end
+    }
+  end
+
+  def full?
+    @board.all? { |position| position == "X" || position == "O"}
+  end
+
+  def draw?
+    if won? == false && full? == true
+      return true
+    elsif won? != false
+      false
+    else
+      false
+    end
+  end
+
+  def over?
+    if full? == true || won? != false
+      return true
+    end
+  end
+
+  def winner
+    winning_combo = won?
+    if [@board_combo[0], @board_combo[1], @board_combo[2]] == ["X","X","X"]
+      return "X"
+    elsif [@board_combo[0], @board_combo[1], @board_combo[2]] == ["O","O","O"]
+      return "O"
+    end
+  end
+
+  def play
+    until over? == true
+      turn
+      if draw? == true
+        break
+      end
+    end
+
+    if draw? == true
+      puts "Cat's Game!"
+      return "Draw"
+    end
+      if winner == "X"
+        puts "Congratulations X!"
+      elsif winner == "O"
+        puts "Congratulations O!"
+      end
+    end
+
+
 end
